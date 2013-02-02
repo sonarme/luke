@@ -1,5 +1,6 @@
 package org.getopt.luke;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.*;
 import org.apache.lucene.util.Bits;
 
@@ -91,9 +92,9 @@ public class DocReconstructor extends Observable {
     if (live != null && !live.get(docNum)) {
       throw new Exception("Document is deleted.");
     } else {
-      StoredDocument doc =  reader.document(docNum);
+      Document doc =  reader.document(docNum);
       for (int i = 0; i < fieldNames.length; i++) {
-        StorableField[] fs = doc.getFields(fieldNames[i]);
+        IndexableField[] fs = doc.getFields(fieldNames[i]);
         if (fs != null && fs.length > 0) {
           res.getStoredFields().put(fieldNames[i], fs);
         }
@@ -181,11 +182,11 @@ public class DocReconstructor extends Observable {
    * @author ab
    */
   public static class Reconstructed {
-    private Map<String, StorableField[]> storedFields;
+    private Map<String, IndexableField[]> storedFields;
     private Map<String, GrowableStringArray> reconstructedFields;
 
     public Reconstructed() {
-      storedFields = new HashMap<String, StorableField[]>();
+      storedFields = new HashMap<String, IndexableField[]>();
       reconstructedFields = new HashMap<String, GrowableStringArray>();
     }
     
@@ -194,7 +195,7 @@ public class DocReconstructor extends Observable {
      * @param storedFields field data of stored fields
      * @param reconstructedFields field data of unstored fields
      */
-    public Reconstructed(Map<String, StorableField[]> storedFields,
+    public Reconstructed(Map<String, IndexableField[]> storedFields,
         Map<String, GrowableStringArray> reconstructedFields) {
       this.storedFields = storedFields;
       this.reconstructedFields = reconstructedFields;
@@ -220,7 +221,7 @@ public class DocReconstructor extends Observable {
     /**
      * @return the storedFields
      */
-    public Map<String, StorableField[]> getStoredFields() {
+    public Map<String, IndexableField[]> getStoredFields() {
       return storedFields;
     }
 

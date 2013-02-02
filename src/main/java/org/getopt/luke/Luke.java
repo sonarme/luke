@@ -2466,7 +2466,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     _showDoc(docNum, 0);
   }
 
-  StoredDocument doc = null;
+  Document doc = null;
   int iNum;
   
   private void _showDoc(Object docNum, int incr) {
@@ -2554,7 +2554,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
           for (int p = 0; p < idxFields.length; p++) {
             String key = idxFields[p];
             if (!doc.hasField(key)) continue;
-            StorableField[] fields = doc.getStoredFields().get(key);
+            IndexableField[] fields = doc.getStoredFields().get(key);
             GrowableStringArray recField = doc.getReconstructedFields().get(key);
             int count = 0;
             if (recField != null) count = 1;
@@ -2860,7 +2860,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     }
   }
   
-  private void _showDocFields(int docid, StoredDocument doc) {
+  private void _showDocFields(int docid, Document doc) {
     Object table = find("docTable");
     Object srchOpts = find("srchOptTabs");
     Similarity sim = createSimilarity(srchOpts);
@@ -2877,7 +2877,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     }
     setString(find("docNum1"), "text", String.valueOf(docid));
     for (int i = 0; i < idxFields.length; i++) {
-      StorableField[] fields = doc.getFields(idxFields[i]);
+      IndexableField[] fields = doc.getFields(idxFields[i]);
       if (fields.length == 0) {
         addFieldRow(table, idxFields[i], null, docid, null);
         continue;
@@ -2890,7 +2890,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   }
   
   Font courier = null;
-  private void addFieldRow(Object table, String fName, StorableField ixf, int docid, TFIDFSimilarity sim) {
+  private void addFieldRow(Object table, String fName, IndexableField ixf, int docid, TFIDFSimilarity sim) {
     Object row = create("row");
     add(table, row);
     putProperty(row, "field", ixf);
@@ -4760,14 +4760,14 @@ public class Luke extends Thinlet implements ClipboardOwner {
     setString(cell, "text", String.valueOf(docId));
     setChoice(cell, "alignment", "right");
     add(row, cell);
-    StoredDocument doc = ir.document(docId);
+    Document doc = ir.document(docId);
     putProperty(row, "docid", new Integer(docId));
     StringBuffer vals = new StringBuffer();
     for (int j = 0; j < idxFields.length; j++) {
       cell = create("cell");
       Decoder dec = decoders.get(idxFields[j]);
       if (dec == null) dec = defDecoder;
-      StorableField[] values = doc.getFields(idxFields[j]);
+      IndexableField[] values = doc.getFields(idxFields[j]);
       vals.setLength(0);
       boolean decodeErr = false;
       if (values != null) for (int k = 0; k < values.length; k++) {
@@ -4867,7 +4867,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     }
     SlowThread st = new SlowThread(this) {
       public void execute() {
-        StoredDocument doc = null;
+        Document doc = null;
         try {
           doc = ir.document(docid.intValue());
         } catch (Exception e) {
@@ -4896,7 +4896,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     SlowThread st = new SlowThread(this) {
       public void execute() {
         try {
-          StoredDocument doc = ir.document(td.docID());
+          Document doc = ir.document(td.docID());
           setString(find("docNum"), "text", String.valueOf(td.docID()));
           setString(find("tFreq"), "text", String.valueOf(td.freq()));
           _showDocFields(td.docID(), doc);          

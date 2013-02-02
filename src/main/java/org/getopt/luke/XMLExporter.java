@@ -1,5 +1,6 @@
 package org.getopt.luke;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
@@ -106,7 +107,7 @@ public class XMLExporter extends Observable {
         // write out some statistics
         writeIndexInfo(bw);
       }
-      StoredDocument doc = null;
+      Document doc = null;
       int i = -1;
       if (ranges == null) {
         ranges = new Ranges();
@@ -170,12 +171,12 @@ public class XMLExporter extends Observable {
     return !pn.aborted;
   }
   
-  private void writeDoc(BufferedWriter bw, int docNum, StoredDocument doc, boolean decode,
+  private void writeDoc(BufferedWriter bw, int docNum, Document doc, boolean decode,
           Bits liveDocs) throws Exception {
     bw.write("<doc id='" + docNum + "'>\n");
     BytesRef bytes = new BytesRef();
     for (String fieldName : fieldNames) {
-      StorableField[] fields = doc.getFields(fieldName);
+      IndexableField[] fields = doc.getFields(fieldName);
       if (fields == null || fields.length == 0) {
         continue;
       }
@@ -194,7 +195,7 @@ public class XMLExporter extends Observable {
         }
       } 
       bw.write("' flags='" + Util.fieldFlags((Field)fields[0], infos.fieldInfo(fields[0].name())) + "'>\n");
-      for (StorableField ixf : fields) {
+      for (IndexableField ixf : fields) {
         String val = null;
         Field f = (Field)ixf;
         if (decode) {
