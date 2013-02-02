@@ -1,0 +1,153 @@
+package org.getopt.luke.plugins;
+
+import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.TermsEnum;
+import org.getopt.luke.LukePlugin;
+import org.getopt.luke.SlowThread;
+import org.getopt.luke.Util;
+import thinlet.Thinlet;
+
+import java.util.Collection;
+import java.util.Iterator;
+
+public class VocabAnalysisPlugin extends LukePlugin {
+  VocabChart chart = null;
+
+  String selectedField;
+
+  /** Default constructor. Initialize analyzers list. */
+  public VocabAnalysisPlugin() throws Exception {
+  }
+
+  public String getXULName() {
+    return "/xml/vocab-plugin.xml";
+  }
+
+  public String getPluginName() {
+    return "Vocabulary Analysis Tool";
+  }
+
+  public String getPluginInfo() {
+    return "Tool for showing index's vocabulary growth, by Mark Harwood";
+  }
+
+  public String getPluginHome() {
+    return "mailto:mharwood@apache.org";
+  }
+
+  /** Overriden to populate the drop down even if no index is open. */
+  public void setMyUi(Object ui) {
+    super.setMyUi(ui);
+    try {
+      init();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    ;
+  }
+
+  public boolean init() throws Exception {
+    Object combobox = app.find(myUi, "fields");
+    app.removeAll(combobox);
+    Object maxdoc = app.find(myUi, "maxdoc");
+    app.setString(maxdoc, "text", "");
+    Object middoc = app.find(myUi, "middoc");
+    app.setString(middoc, "text", "");
+    Object bean = app.find(myUi, "vocabchart");
+    Object container = app.getParent(bean);
+    chart = new VocabChart(app, container);
+    IndexReader reader = getReader();
+    if (reader != null) {
+      Collection<String> fieldNames = Util.fieldNames(reader, true);
+      String firstField = null;
+      for (Iterator<String> iter = fieldNames.iterator(); iter.hasNext();) {
+        String fieldName = (String) iter.next();
+        if (firstField == null) {
+          firstField = fieldName;
+        }
+        Object choice = Thinlet.create("choice");
+        app.setString(choice, "text", fieldName);
+        app.add(combobox, choice);
+      }
+      app.setInteger(combobox, "selected", 0);
+      app.setString(combobox, "text", firstField);
+      app.setComponent(bean, "bean", chart);
+      app.setString(maxdoc, "text", reader.maxDoc() + "");
+      app.setString(middoc, "text", (reader.maxDoc() / 2 ) + "");
+    }
+    return true;
+  }
+  
+  public void cleanChart() {
+    chart.setScores(null);
+    chart.invalidate();
+    app.repaint();
+  }
+
+  public void analyze() {
+    Object combobox = app.find(myUi, "fields");
+    final String field = app.getString(combobox, "text");
+    Object ckbox = app.find(myUi, "cumul");
+    final boolean cumul = app.getBoolean(ckbox, "selected");
+    IndexReader reader = getReader();
+    if (reader == null) {
+      app.showStatus("No index loaded");
+      cleanChart();
+      return;
+    }
+    SlowThread st = new SlowThread(app) {
+      public void execute() {
+        try {
+          int numAgeGroups = 100;
+          float numDocs = ir.maxDoc();
+          if (numDocs < numAgeGroups) numAgeGroups = ir.maxDoc();
+          float ageTotals[] = new float[numAgeGroups];
+          TermsEnum te = MultiFields.getTerms(ir, field).iterator(null);
+          while (te.next() != null) {
+            DocsEnum td = te.docs(null, null, 0);
+            td.nextDoc();
+            float firstDocId = td.docID();
+            int ageBracket = (int) ((firstDocId / numDocs) * numAgeGroups);
+            ageTotals[ageBracket]++;
+          }
+          float total = 0.0f;
+          float max = 0.0f;
+          for (int i = 0; i < ageTotals.length; i++) {
+            if (ageTotals[i] > max) max = ageTotals[i];
+            total += ageTotals[i];
+            if (i > 0 && cumul) {
+              ageTotals[i] += ageTotals[i - 1]; // make totals cumulative
+            }
+          }
+          Object maxpct = app.find(myUi, "maxpct");
+          if (cumul) {
+            app.setString(maxpct, "text", "100 %");
+          } else {
+            app.setString(maxpct, "text", (float)Math.round(max * 10000.0f / total) / 100.0f + " %");
+          }
+          chart.setScores(ageTotals);
+          chart.invalidate();
+          app.repaint();
+        } catch (Exception e) {
+          app.showStatus("ERROR: " + e.getMessage());
+        }        
+      }
+    };
+    if (app.isSlowAccess()) {
+      st.start();
+    } else {
+      st.execute();
+    }
+  }
+
+  public String getSelectedField() {
+    return selectedField;
+  }
+
+  public void setSelectedField(String selectedField) {
+    this.selectedField = selectedField;
+  }
+
+}
