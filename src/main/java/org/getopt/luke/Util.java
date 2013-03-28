@@ -5,25 +5,22 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.DateTools.Resolution;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.FieldType.NumericType;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.CompositeReader;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocValues;
-import org.apache.lucene.index.DocValues.Source;
 import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.SlowCompositeReaderWrapper;
+import org.apache.lucene.index.FieldInfo.DocValuesType;
 import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.SlowCompositeReaderWrapper;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
@@ -179,47 +176,6 @@ public class Util {
     return res;
   }
   
-  public static String normsToString(DocValues norms, String fName, int docid, TFIDFSimilarity sim) {
-    if (norms == null) {
-      return "-?-";
-    }
-    Source src;
-    try {
-      src = norms.getSource();
-    } catch (IOException e1) {
-      e1.printStackTrace();
-      return "???" + e1.getMessage();
-    }
-    switch (norms.getType()) {
-    case FIXED_INTS_8:
-      if (sim != null) {
-        try {
-          return String.valueOf(decodeNormValue((byte)src.getInt(docid), fName, sim));
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-      return String.valueOf(src.getInt(docid));
-    case FIXED_INTS_16:
-    case FIXED_INTS_32:
-    case FIXED_INTS_64:
-    case VAR_INTS:
-      return String.valueOf(src.getInt(docid));
-    case FLOAT_32:
-    case FLOAT_64:
-      return String.valueOf(src.getFloat(docid));
-    case BYTES_FIXED_DEREF:
-    case BYTES_FIXED_SORTED:
-    case BYTES_FIXED_STRAIGHT:
-    case BYTES_VAR_DEREF:
-    case BYTES_VAR_SORTED:
-    case BYTES_VAR_STRAIGHT:
-      BytesRef val = src.getBytes(docid, null);
-      return bytesToHex(val, false);
-    }
-    return "???unknown type";
-  }
-  
   public static float decodeNormValue(byte v, String fieldName, TFIDFSimilarity sim) throws Exception {
     try {
       return sim.decodeNormValue(v);
@@ -336,50 +292,23 @@ public class Util {
     return flags.toString();
   }
   
-  private static String dvToString(DocValues.Type type) {
+  private static String dvToString(DocValuesType type) {
     String fl;
     if (type == null) {
       return "???";
     }
     switch (type) {
-    case BYTES_FIXED_DEREF:
-      fl = "bfd";
+    case NUMERIC:
+      fl = "num";
       break;
-    case BYTES_FIXED_SORTED:
-      fl = "bfs";
+    case BINARY:
+      fl = "bin";
       break;
-    case BYTES_FIXED_STRAIGHT:
-      fl = "bft";
+    case SORTED:
+      fl = "srt";
       break;
-    case BYTES_VAR_DEREF:
-      fl = "bvd";
-      break;
-    case BYTES_VAR_SORTED:
-      fl = "bvs";
-      break;
-    case BYTES_VAR_STRAIGHT:
-      fl = "bvt";
-      break;
-    case FIXED_INTS_8:
-      fl = "i08";
-      break;
-    case FIXED_INTS_16:
-      fl = "i16";
-      break;
-    case FIXED_INTS_32:
-      fl = "i32";
-      break;
-    case FIXED_INTS_64:
-      fl = "i64";
-      break;
-    case VAR_INTS:
-      fl = "vin";
-      break;
-    case FLOAT_32:
-      fl = "f32";
-      break;
-    case FLOAT_64:
-      fl = "f64";
+    case SORTED_SET:
+      fl = "srtset";
       break;
     default:
       fl = "???";
