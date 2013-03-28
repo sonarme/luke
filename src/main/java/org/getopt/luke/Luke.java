@@ -81,7 +81,6 @@ import org.apache.lucene.index.CheckIndex;
 import org.apache.lucene.index.CheckIndex.Status.SegmentInfoStatus;
 import org.apache.lucene.index.CompositeReader;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocValues;
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.FieldInfo;
@@ -100,6 +99,7 @@ import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.index.MergePolicy;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.index.NumericDocValues;
 import org.apache.lucene.index.SegmentInfoPerCommit;
 import org.apache.lucene.index.SegmentInfos;
 import org.apache.lucene.index.SegmentReader;
@@ -185,7 +185,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
 
   private static final long serialVersionUID = -470469999079073156L;
   
-  public static Version LV = Version.LUCENE_CURRENT;
+  public static Version LV = Version.LUCENE_42;
   
   private Directory dir = null;
   String pName = null;
@@ -2679,7 +2679,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
               Object stored = find(editfield, "stored");
               Object restored = find(editfield, "restored");
               if (ar != null) {
-                setBoolean(cbONorms, "selected", ar.normValues(key)!= null);
+                setBoolean(cbONorms, "selected", ar.getNormValues(key)!= null);
               }
               Field f = null;
               if (fields != null && fields.length > i) {
@@ -3019,8 +3019,8 @@ public class Luke extends Thinlet implements ClipboardOwner {
     if (f != null) {
       try {
         if (ar != null && info.hasNorms()) {
-          DocValues norms = ar.normValues(fName);
-          String val = Util.normsToString(norms, fName, docid, sim);
+          NumericDocValues norms = ar.getNormValues(fName);
+          String val = Long.toString(norms.get(docid));
           setString(cell, "text", val);
         } else {
           setString(cell, "text", "---");
@@ -3219,8 +3219,8 @@ public class Luke extends Thinlet implements ClipboardOwner {
     putProperty(dialog, "similarity", s);
     if (ar != null) {
      try {
-       DocValues norms = ar.normValues(f.name());
-       byte curBVal = (byte)norms.getSource().getInt(docNum.intValue());
+       NumericDocValues norms = ar.getNormValues(f.name());
+       byte curBVal = (byte) norms.get(docNum.intValue());
        float curFVal = Util.decodeNormValue(curBVal, f.name(), s);
        setString(curNorm, "text", String.valueOf(curFVal));
        setString(newNorm, "text", String.valueOf(curFVal));
@@ -5307,7 +5307,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     Luke luke = new Luke();
     DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
     Calendar cal = Calendar.getInstance();
-    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox, v 4.1.0 (" + dateFormat.format(cal.getTime()) + ")", luke, 850, 650);
+    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox, v 4.2.0 (" + dateFormat.format(cal.getTime()) + ")", luke, 850, 650);
     f.setIconImage(Toolkit.getDefaultToolkit().createImage(Luke.class.getResource("/img/luke.gif")));
     if (args.length > 0) {
       boolean force = false, ro = false, ramdir = false;
