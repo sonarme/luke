@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.lucene.index.IndexCommit;
 import org.apache.lucene.index.IndexDeletionPolicy;
 
-public class KeepLastIndexDeletionPolicy implements IndexDeletionPolicy {
+public class KeepLastIndexDeletionPolicy extends IndexDeletionPolicy {
 
   /**
    * Deletes all commits except the most recent one.
@@ -13,7 +13,12 @@ public class KeepLastIndexDeletionPolicy implements IndexDeletionPolicy {
   public void onInit(List commits) {
     //System.out.println("onInit -> onCommit");
     // Note that commits.size() should normally be 1:
-    onCommit(commits);
+    try {
+	  onCommit(commits);
+    }
+    catch (java.io.IOException e) {
+    	e.printStackTrace();
+    }
   }
 
   /**
