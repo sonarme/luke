@@ -41,4 +41,9 @@ public class NoScoringScorer extends Scorer {
         return 1;
     }
 
+    @Override
+    public long cost() {
+        return 0;
+    }
+
 }

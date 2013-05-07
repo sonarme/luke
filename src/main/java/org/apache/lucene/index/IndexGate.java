@@ -249,6 +249,7 @@ public class IndexGate {
     return compound > nonCompound;
   }
   
+  /* FIXME chatellier : not called and cause compile error since lucene 4.3.0
   public static void deletePendingFiles(Directory dir, IndexDeletionPolicy policy) throws Exception {
     SegmentInfos infos = new SegmentInfos();
     infos.read(dir);
@@ -257,7 +258,7 @@ public class IndexGate {
     IndexFileDeleter deleter = new IndexFileDeleter(dir, policy, infos, null, iw);
     deleter.close();
     iw.close();
-  }
+  }*/
   
   public static List<String> getDeletableFiles(Directory dir) throws Exception {
     List<String> known = getIndexFiles(dir);
