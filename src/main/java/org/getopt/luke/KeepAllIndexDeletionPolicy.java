@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.lucene.index.IndexDeletionPolicy;
 
-public class KeepAllIndexDeletionPolicy implements IndexDeletionPolicy {
+public class KeepAllIndexDeletionPolicy extends IndexDeletionPolicy {
 
   public void onCommit(List commits) throws IOException {
     // do nothing - keep all points
