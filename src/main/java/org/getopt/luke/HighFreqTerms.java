@@ -187,7 +187,7 @@ public class HighFreqTerms {
     long totalTF = 0;
     try {
       Bits liveDocs = MultiFields.getLiveDocs(reader);
-      totalTF = MultiFields.totalTermFreq(reader, field, termtext);
+      totalTF = reader.getSumTotalTermFreq(field);
       return totalTF;
     } catch (Exception e) {
       return 0;
