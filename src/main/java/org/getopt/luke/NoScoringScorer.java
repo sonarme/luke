@@ -43,7 +43,6 @@ public class NoScoringScorer extends Scorer {
 
     @Override
     public long cost() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
