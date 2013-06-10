@@ -16,7 +16,7 @@ public class KeepLastIndexDeletionPolicy extends IndexDeletionPolicy {
     try {
 	  onCommit(commits);
     }
-    catch (java.io.IOException e) {
+    catch (Exception e) {
     	e.printStackTrace();
     }
   }
