@@ -17,18 +17,22 @@ package org.getopt.luke;
  * limitations under the License.
  */
 
-import org.apache.lucene.index.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Fields;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.PriorityQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
 
 /**
  * <b>NOTE: this is a temporary copy of contrib/misc from Lucene - 
@@ -187,24 +191,12 @@ public class HighFreqTerms {
     long totalTF = 0;
     try {
       //Bits liveDocs = MultiFields.getLiveDocs(reader);
-      totalTF = totalTermFreq(reader, field, termtext);
+      totalTF = reader.getSumTotalTermFreq(field);
       return totalTF;
     } catch (Exception e) {
       return 0;
     }
   }
-
-  /* Copied from lucene 4.2.x core */
-  private static long totalTermFreq(IndexReader r, String field, BytesRef text) throws IOException {
-      final Terms terms = MultiFields.getTerms(r, field);
-      if (terms != null) {
-        final TermsEnum termsEnum = terms.iterator(null);
-        if (termsEnum.seekExact(text, true)) {
-          return termsEnum.totalTermFreq();
-        }
-      }
-      return 0;
-    }
 
   public static void fillQueue(TermsEnum termsEnum, TermStatsQueue tiq, String field) throws Exception {
   BytesRef term;

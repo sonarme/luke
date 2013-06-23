@@ -1,3 +1,19 @@
+* Update to 4.3.1
+
+* Update to 4.3.0
+
+
+
+I (Peter Lenahan) was not sure of the correct solution to a small compile problem.
+I added a try/catch statement just to fix a compile issue.
+
+All of the work for the 4.3 upgrade was done by Eric Chatellier
+
+To run Luke I needed to add MaxPermSize to the java command.
+
+java -jar -XX:MaxPermSize=256m luke-4.3.0-jar-with-dependencies.jar
+
+
 Changes in unreleased version:
 
 * Update to 4.0.0_BETA.
