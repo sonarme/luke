@@ -19,6 +19,7 @@ package org.getopt.luke;
 
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.PriorityQueue;
 import org.slf4j.Logger;
@@ -105,7 +106,7 @@ public class HighFreqTerms {
    * 
    * @param reader
    * @param numTerms
-   * @param field
+   * @param fieldNames
    * @return TermStats[] ordered by terms with highest docFreq first.
    * @throws Exception
    */

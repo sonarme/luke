@@ -14,8 +14,8 @@ This fork's goal is:
 0. Keep the project mavenized (compatible with Apache Lucene and Solr style)
 1. To port the thinlet UI to an ASL compliant license framework so that it can be contributed back to Apache Lucene.
    Current work is done with GWT 2.5.1.
-2. To revive the project and establish a single point trust for the development and updates of the tool. This said,
+2. To revive the project and establish a single point of trust for the development and updates of the tool. This said,
    everyone is welcome to join.
 
 
-There are other more technical goals, that will get updated here as get into shape.
+There are other more technical goals, that will get updated here as they get into the shape.
