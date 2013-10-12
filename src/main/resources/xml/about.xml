@@ -3,6 +3,7 @@
 	<label halign="center" valign="center" text="v 4.0_BETA (2012-08-22)" font="10" icon="/img/luke-big.gif"/>
 	<button type="link" tooltip="Go to Luke home page" action="goUrl(this)" halign="center" property="url=http://www.getopt.org/luke" foreground="#5aaa88" text="Lucene Index Toolbox" font="18 bold"/>
 	<label halign="center" font="13" text="Created by Andrzej Bialecki &lt;ab@getopt.org&gt;"/>
+    <label halign="center" font="13" text="Maintained by Dmitry Kan &lt;dmitry.lucene@gmail.com&gt;"/>
 	<label halign="center" font="italic 11" text="In tribute to the creators and developers of the best Java search library."/>
 	<button type="link" icon="/img/lucene.gif" tooltip="Go to Lucene home page" action="goUrl(this)" halign="center" property="url=http://lucene.apache.org/" foreground="#5aaa88" text="Apache Lucene - home page"/>
 	<label halign="center" font="11" name="lver" text=""/>

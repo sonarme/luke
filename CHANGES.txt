@@ -1,5 +1,6 @@
 * Update to 4.5.0
 
+fixes by Pascal Dimassimo:
 
 - Cache parameter was useless (LUCENE-5114)
 - LogMergePolicy don't has a method anymore to set useCoumpoundFile. Use IndexWriterConfig.setUseCompoundFile (LUCENE-5038)
