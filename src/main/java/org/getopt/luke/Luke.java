@@ -16,7 +16,6 @@
  */
 package org.getopt.luke;
 
-import org.apache.lucene.LucenePackage;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
@@ -4939,7 +4938,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void actionAbout() {
     Object about = addComponent(this, "/xml/about.xml", null, null);
     Object lver = find(about, "lver");
-    setString(lver, "text", "Lucene version: " + LucenePackage.get().getImplementationVersion());
+    setString(lver, "text", "Lucene version: " + Version.LUCENE_45.name());
   }
 
   /**
