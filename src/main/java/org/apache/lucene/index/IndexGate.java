@@ -1,25 +1,12 @@
 package org.apache.lucene.index;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.codecs.Codec;
 import org.apache.lucene.codecs.CodecUtil;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.util.Version;
-import org.getopt.luke.Luke;
-import org.getopt.luke.KeepAllIndexDeletionPolicy;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This class allows us to peek at various Lucene internals, not available
@@ -240,7 +227,7 @@ public class IndexGate {
     infos.read(dir);
     int compound = 0, nonCompound = 0;
     for (int i = 0; i < infos.size(); i++) {
-      if (((SegmentInfoPerCommit)infos.info(i)).info.getUseCompoundFile()) {
+      if (infos.info(i).info.getUseCompoundFile()) {
         compound++;
       } else {
         nonCompound++;

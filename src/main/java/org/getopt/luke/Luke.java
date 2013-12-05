@@ -89,7 +89,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
 
   private static final long serialVersionUID = -470469999079073156L;
   
-  public static Version LV = Version.LUCENE_43;
+  public static Version LV = Version.LUCENE_46;
   
   private Directory dir = null;
   String pName = null;
@@ -108,12 +108,14 @@ public class Luke extends Thinlet implements ClipboardOwner {
   private Object statmsg = null;
   private Object slowstatus = null;
   private Object slowmsg = null;
-  private Analyzer stdAnalyzer = new StandardAnalyzer(LV);
+  // never read
+  //private Analyzer stdAnalyzer = new StandardAnalyzer(LV);
   //private QueryParser qp = null;
   private boolean readOnly = false;
   private boolean ram = false;
   private boolean keepCommits = false;
-  private boolean multi = false;
+  // never read
+  //private boolean multi = false;
   private int tiiDiv = 1;
   private IndexCommit currentCommit = null;
   private Similarity similarity = null;
@@ -610,7 +612,8 @@ public class Luke extends Thinlet implements ClipboardOwner {
   /**
    * Attempt to load the index with parameters specified in the dialog.
    * <p>NOTE: this method is invoked from the UI. If you need to open an index
-   * programmatically, you should use {@link #openIndex(String, boolean, boolean, boolean)} instead.</p>
+   * programmatically, you should use {@link: openIndex(String, boolean, String, boolean,
+          boolean, boolean , IndexCommit, int)} instead.</p>
    * @param dialog UI dialog with parameters
    */
   public void openOk(Object dialog) {
@@ -818,10 +821,10 @@ public class Luke extends Thinlet implements ClipboardOwner {
   
   /**
    * Open indicated index and re-initialize all GUI and plugins.
-   * @param pName path to index
+   * @param name path to index
    * @param force if true, and the index is locked, unlock it first. If false, and
    * the index is locked, an error will be reported.
-   * @param readOnly open in read-only mode, and disallow modifications.
+   * @param ro open in read-only mode, and disallow modifications.
    */
   public void openIndex(String name, boolean force, String dirImpl, boolean ro,
       boolean ramdir, boolean keepCommits, IndexCommit point, int tiiDivisor) {
@@ -1384,7 +1387,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       errorMsg("Error reading segment infos for '" + segName + ": " + e.toString());
       return;
     }
-    for (SegmentInfoPerCommit si : infos.asList()) {
+    for (SegmentCommitInfo si : infos.asList()) {
       Object r = create("row");
       add(segTable, r);
       Object cell = create("cell");
@@ -1430,7 +1433,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     if (row == null) {
       return;
     }
-    SegmentInfoPerCommit si = (SegmentInfoPerCommit)getProperty(row, "si");
+    SegmentCommitInfo si = (SegmentCommitInfo)getProperty(row, "si");
     if (si == null) {
       showStatus("Missing SegmentInfoPerCommit???");
       return;
@@ -2316,7 +2319,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   
   /**
    * Optimize the current index
-   * @param method Thinlet menuitem widget containing the choice of index format.
+   * Method of optimization is derived from the Thinlet menuitem widget containing the choice of index format.
    * If the widget name is "optCompound" then the index will be optimized into compound
    * format; otherwise a plain multi-file format will be used.
    * <p>NOTE: this method is usually invoked from the GUI, and it also re-initializes GUI
@@ -4938,7 +4941,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void actionAbout() {
     Object about = addComponent(this, "/xml/about.xml", null, null);
     Object lver = find(about, "lver");
-    setString(lver, "text", "Lucene version: " + Version.LUCENE_45.name());
+    setString(lver, "text", "Lucene version: " + Version.LUCENE_46.name());
   }
 
   /**
@@ -5183,7 +5186,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     Luke luke = new Luke();
     DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
     Calendar cal = Calendar.getInstance();
-    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox, v 4.5.0 (" + dateFormat.format(cal.getTime()) + ")", luke, 850, 650);
+    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox, v 4.6.0 (" + dateFormat.format(cal.getTime()) + ")", luke, 850, 650);
     f.setIconImage(Toolkit.getDefaultToolkit().createImage(Luke.class.getResource("/img/luke.gif")));
     if (args.length > 0) {
       boolean force = false, ro = false, ramdir = false;

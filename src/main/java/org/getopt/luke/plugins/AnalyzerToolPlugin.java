@@ -1,25 +1,18 @@
 package org.getopt.luke.plugins;
 
-import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.util.Iterator;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.FlagsAttribute;
-import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PayloadAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.analysis.tokenattributes.*;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.getopt.luke.LukePlugin;
 import org.getopt.luke.Util;
+
+import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
 
 public class AnalyzerToolPlugin extends LukePlugin {
 
@@ -78,7 +71,7 @@ public class AnalyzerToolPlugin extends LukePlugin {
       app.setString(choice, "text", v.toString());
       app.putProperty(choice, "version", v);
       app.add(aVersion, choice);
-      if (v.equals(Version.LUCENE_CURRENT)) {
+      if (v.equals(Version.LUCENE_46)) {
         app.setInteger(aVersion, "selected", i);
       }
     }
@@ -109,16 +102,21 @@ public class AnalyzerToolPlugin extends LukePlugin {
           return;
         }
       }
-      TokenStream ts = analyzer.tokenStream("text", new StringReader(app
+
+
+        TokenStream ts = analyzer.tokenStream("text", new StringReader(app
               .getString(inputText, "text")));
+        ts.reset();
+
       app.removeAll(resultsList);
 
       while (ts.incrementToken()) {
         Object row = app.create("item");
-        app.setString(row, "text", ((CharTermAttribute)ts.getAttribute(CharTermAttribute.class)).toString());
+        app.setString(row, "text", (ts.getAttribute(CharTermAttribute.class)).toString());
         app.add(resultsList, row);
         app.putProperty(row, "state", ts.cloneAttributes());
       }
+        ts.close();
     } catch (Throwable t) {
       app.showStatus("Error analyzing:" + t.getMessage());
     }

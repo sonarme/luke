@@ -6,15 +6,15 @@
 
     <groupId>luke</groupId>
     <artifactId>luke</artifactId>
-    <version>4.5.0</version>
+    <version>4.6.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lucene.version>4.5.0</lucene.version>
+        <lucene.version>4.6.0</lucene.version>
         <ehcache.version>2.6.2</ehcache.version>
         <hadoop.version>0.20.2</hadoop.version>
         <log4j.version>1.2.17</log4j.version>
-        <maven-assembly-plugin.version>2.3</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
         <rhino.version>1.7R4</rhino.version>
 
     </properties>
@@ -147,6 +147,38 @@
                 <configuration>
                     <mainClass/>
                 </configuration>
+            </plugin>
+
+            <!-- create a tar.gz distribution file with all the binary dependencies in lib directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>org.getopt.luke.Luke</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>.</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

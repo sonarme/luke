@@ -41,6 +41,9 @@ import java.util.Random;
 public class FsDirectory extends Directory {
   private static final Logger LOG = LoggerFactory.getLogger(FsDirectory.class);
 
+    Lock lock;
+    LockFactory lockFactory;
+
   private FileSystem fs;
   private Path directory;
   private int ioFileBufferSize;
@@ -81,7 +84,7 @@ public class FsDirectory extends Directory {
       create();
     }
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException(directory + " not a directory");
   }
 
@@ -91,7 +94,7 @@ public class FsDirectory extends Directory {
       reporter.reportStatus("Created " + directory);
     }
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException(directory + " not a directory");
 
     // clear old files
@@ -169,26 +172,33 @@ public class FsDirectory extends Directory {
   }
 
   public Lock makeLock(final String name) {
-    return new Lock() {
-      public boolean obtain() {
-        return true;
+      if (lock == null) {
+          lock = lockFactory.makeLock(name);
       }
-      public void release() {
-      }
-      public boolean isLocked() {
-        throw new UnsupportedOperationException();
-      }
-      public String toString() {
-        return "Lock@" + new Path(directory, name);
-      }
-    };
+      return lock;
   }
 
-  public synchronized void close() throws IOException {
+    @Override
+    public void clearLock(String s) throws IOException {
+        lock.release();
+        lock = null;
+    }
+
+    public synchronized void close() throws IOException {
     fs.close();
   }
 
-  public String toString() {
+    @Override
+    public void setLockFactory(LockFactory _lockFactory) throws IOException {
+        lockFactory = _lockFactory;
+    }
+
+    @Override
+    public LockFactory getLockFactory() {
+        return lockFactory;
+    }
+
+    public String toString() {
     return this.getClass().getName() + "@" + directory;
   }
 
