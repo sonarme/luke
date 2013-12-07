@@ -1,7 +1,9 @@
 luke
 ====
 
-This is a fork of Luke tool ported for Lucene 4.3 (mavenized)
+![Luke, the Lucene Toolbox Project](https://github.com/DmitryKey/luke/src/main/resources/img/luke.gif "Luke")
+
+This is mavenised version of Luke tool maintained and further developed by Dmitry Kan (this repo owner).
 
 * The original author is Andrzej Bialecki (https://code.google.com/p/luke)
 * The project has been mavenized by Neil Ireson (see google group discussion here: http://bit.ly/16Y8utO)
@@ -9,7 +11,7 @@ This is a fork of Luke tool ported for Lucene 4.3 (mavenized)
 * The project has been back-ported to Lucene 4.3 by sonarname, who later decided not to continue supporting the project
 * There are updates to the (non-mavenized) project done by tarzanek (https://github.com/tarzanek/luke)
 
-This fork's goal is:
+This project's goal is:
 
 0. Keep the project mavenized (compatible with Apache Lucene and Solr style)
 1. To port the thinlet UI to an ASL compliant license framework so that it can be contributed back to Apache Lucene.
