@@ -1,7 +1,7 @@
 luke
 ====
 
-![Luke, the Lucene Toolbox Project](https://github.com/DmitryKey/luke/src/main/resources/img/luke.gif "Luke")
+![Luke, the Lucene Toolbox Project](https://github.com/DmitryKey/luke/blob/master/src/main/resources/img/luke-big.gif "Luke")
 
 This is mavenised version of Luke tool maintained and further developed by Dmitry Kan (this repo owner).
 
