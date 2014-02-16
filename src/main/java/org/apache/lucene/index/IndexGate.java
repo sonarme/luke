@@ -183,8 +183,7 @@ public class IndexGate {
   public static FormatDetails getIndexFormat(final Directory dir) throws Exception {
     SegmentInfos.FindSegmentsFile fsf = new SegmentInfos.FindSegmentsFile(dir) {
 
-      protected Object doBody(String segmentsFile) throws CorruptIndexException,
-          IOException {
+      protected Object doBody(String segmentsFile) throws IOException {
         FormatDetails res = new FormatDetails();
         res.capabilities = "unknown";
         res.genericName = "unknown";
@@ -197,8 +196,8 @@ public class IndexGate {
             int actualVersion = SegmentInfos.VERSION_40;
             try {
               actualVersion = CodecUtil.checkHeaderNoMagic(in, "segments", SegmentInfos.VERSION_40, Integer.MAX_VALUE);
-              if (actualVersion > SegmentInfos.VERSION_40) {
-                res.capabilities += " (WARNING: newer version of Lucene that this tool)";
+              if (actualVersion > SegmentInfos.VERSION_46) {
+                res.capabilities += " (WARNING: newer version of Lucene than this tool)";
               }
             } catch (Exception e) {
               e.printStackTrace();
