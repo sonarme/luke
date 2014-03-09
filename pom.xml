@@ -193,6 +193,8 @@
                             <mainClass>org.getopt.luke.Luke</mainClass>
                         </manifest>
                     </archive>
+					<finalName>${project.artifactId}-with-deps</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
