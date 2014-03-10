@@ -1,3 +1,25 @@
+* Update to 4.7.0
+
+Release based on pull request of Petri Kivikangas (https://github.com/DmitryKey/luke/pull/2)
+
+* Update to 4.6.1
+
+upgraded to the latest Apache Lucene 4.6.1 release.
+
+fixes:
+loading the jar from command line is now working fine.
+
+* Update to 4.6.0
+
+port to Lucene 4.6.
+Tested against the solr-4.6 index of exampledocs xml files. 
+Changelist: 
+1. bumped up the version of maven-assembly plugin to the latest 2.4
+2. added maven-jar plugin which copies all binary dependencies into lib/ subdirectory 
+3. Fixed AnalyzerToolPlugin to use token stream reset outside while loop over tokens 
+4. added lock factory handling in FsDirectory (untested) 
+5. updated trivia in about.xml
+
 * Update to 4.5.0
 
 fixes by Pascal Dimassimo:
