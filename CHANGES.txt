@@ -1,6 +1,12 @@
 * Update to 4.7.0
 
 Release based on pull request of Petri Kivikangas (https://github.com/DmitryKey/luke/pull/2)
+Tested against the solr-4.7.0 index.
+
+1. Upgraded maven plugins
+2. Added simple Windows launch script: In Windows, Luke can now be launched easily by executing luke.bat.
+                                       Script sets MaxPermSize to 512m because Luke was found to crash on lower
+                                       settings.
 
 * Update to 4.6.1
 
