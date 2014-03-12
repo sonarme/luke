@@ -111,6 +111,14 @@ public class HadoopPlugin extends LukePlugin {
     myIr = null;
     try {
       Configuration conf = new Configuration();
+        // courtesy of http://stackoverflow.com/a/21118824/158328
+        // to overcome the issue with loading everything into a single jar and these settings being reset in maven-assembly
+        conf.set("fs.hdfs.impl",
+                org.apache.hadoop.hdfs.DistributedFileSystem.class.getName()
+        );
+        conf.set("fs.file.impl",
+                org.apache.hadoop.fs.LocalFileSystem.class.getName()
+        );
       Path path = new Path(uriTxt);
       FileSystem fs = path.getFileSystem(conf);
       if (!fs.exists(path) || fs.isFile(path)) {
