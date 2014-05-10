@@ -1,3 +1,9 @@
+* Update to 4.8.0
+
+This is a trivial update (maven, no code changes), but a required one: index version changed.
+
+This version has also been tested for loading index from HDFS of hadoop 2.2.0 running in pseudo distributed mode.
+
 * Update to 4.7.0
 
 Release based on pull request of Petri Kivikangas (https://github.com/DmitryKey/luke/pull/2)
