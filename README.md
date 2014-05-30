@@ -11,7 +11,8 @@ This is mavenised version of Luke tool maintained and further developed by Dmitr
 * The project has been back-ported to Lucene 4.3 by sonarname, who later decided not to continue supporting the project
 * There are updates to the (non-mavenized) project done by tarzanek (https://github.com/tarzanek/luke)
 
-This project's goal is:
+This project's goal
+====
 
 0. Keep the project mavenized (compatible with Apache Lucene and Solr style)
 1. To port the thinlet UI to an ASL compliant license framework so that it can be contributed back to Apache Lucene.
