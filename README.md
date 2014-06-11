@@ -26,6 +26,10 @@ Launching luke
 Luke has become somewhat greedy on the perm gen size and thus requires an extra parameter to start:
 >java -XX:MaxPermSize=512m -jar luke-with-deps.jar
 
+Running luke with a custom analyzer
+====
+Adrien has provided instructions here:
+http://stackoverflow.com/questions/11190245/adding-my-custom-analyzer-to-luke
 
 
 Releases
