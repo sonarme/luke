@@ -43,7 +43,8 @@ import java.util.zip.ZipFile;
  * @version $Revision: 1.9 $
  */
 public final class ClassFinder {
-  // transient private static Logger log = LoggingManager.getLoggerForClass();
+
+    // transient private static Logger log = LoggingManager.getLoggerForClass();
   private ClassFinder() {
   }
 
@@ -87,6 +88,14 @@ public final class ClassFinder {
           throws IOException, ClassNotFoundException {
     String javaClassPath = System.getProperty("java.class.path");
     String paths[] = javaClassPath.split("" + File.pathSeparatorChar);
+
+      if (Luke.verboseMode) {
+          System.out.println("Found paths: ");
+          for (String path: paths) {
+              System.out.println("path=" + path);
+          }
+      }
+
     Class superClasses[] = new Class[1];
     superClasses[0] = superClass;
     return ClassFinder.findClassesThatExtend(paths, superClasses);
@@ -160,25 +169,31 @@ public final class ClassFinder {
     ArrayList listClasses = null;
     List listSuperClasses = null;
     strPathsOrJars = addJarsInPath(strPathsOrJars);
-    /*
-     * if (log.isDebugEnabled()) { for (int k = 0; k < strPathsOrJars.length;
-     * k++) { log.debug("strPathsOrJars : " + strPathsOrJars[k]); } }
-     */
-    listPaths = getClasspathMatches(strPathsOrJars);
-    /*
-     * if (log.isDebugEnabled()) { Iterator tIter = listPaths.iterator(); for (;
-     * tIter.hasNext();) { log.debug("listPaths : " + tIter.next()); } }
-     */listClasses = new ArrayList();
+
+      if (Luke.verboseMode) {
+          for (int k = 0; k < strPathsOrJars.length; k++) { System.out.println("strPathsOrJars : " + strPathsOrJars[k]); }
+      }
+
+      listPaths = getClasspathMatches(strPathsOrJars);
+
+      if (Luke.verboseMode) {
+          Iterator tIter = listPaths.iterator(); for (;tIter.hasNext();) { System.out.println("listPaths : " + tIter.next()); }
+      }
+
+    listClasses = new ArrayList();
     listSuperClasses = new ArrayList();
     for (int i = 0; i < superClasses.length; i++) {
       listSuperClasses.add(superClasses[i].getName());
     }
     // first get all the classes
     findClassesInPaths(listPaths, listClasses);
-    /*
-     * if (log.isDebugEnabled()) { Iterator tIter = listClasses.iterator(); for
-     * (; tIter.hasNext();) { log.debug("listClasses : " + tIter.next()); } }
-     */List subClassList = findAllSubclasses(listSuperClasses, listClasses,
+
+      if (Luke.verboseMode) {
+          Iterator tIter1 = listClasses.iterator();
+          for(; tIter1.hasNext();) { System.out.println("listClasses : " + tIter1.next()); }
+      }
+
+    List subClassList = findAllSubclasses(listSuperClasses, listClasses,
             innerClasses);
     return subClassList;
   }

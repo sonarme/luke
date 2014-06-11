@@ -158,8 +158,9 @@ public class Luke extends Thinlet implements ClipboardOwner {
   private static final String MSG_CONV_ERROR = "Some values could not be properly represented in this format. " + 
                       "They are marked in grey and presented as a hex dump.";
   private static final String MSG_LUCENE3828 = "Sorry. This functionality doesn't work with Lucene trunk. See LUCENE-3828 for more details.";
+    public static final boolean verboseMode = false; // can create lots of std output
 
-  /** Default constructor, loads preferences, initializes plugins and GUI. */ 
+    /** Default constructor, loads preferences, initializes plugins and GUI. */
   public Luke() {
     super();
     Prefs.load();
@@ -183,7 +184,11 @@ public class Luke extends Thinlet implements ClipboardOwner {
     slowmsg = find(slowstatus, "slowmsg");
     // populate analyzers
     try {
-      Class[] an = ClassFinder.getInstantiableSubclasses(Analyzer.class);
+        if (verboseMode) {
+            System.out.println("Populating analyzers");
+        }
+
+        Class[] an = ClassFinder.getInstantiableSubclasses(Analyzer.class);
       if (an == null || an.length == 0) {
         System.err.println("No analyzers???");
         analyzers = defaultAnalyzers;
@@ -243,8 +248,12 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void populateAnalyzers(Object combo) {
     removeAll(combo);
     String[] aNames = new String[analyzers.length];
+      if (verboseMode)
+        System.out.println("Populating analyzers...");
     for (int i = 0; i < analyzers.length; i++) {
       aNames[i] = analyzers[i].getName();
+        if (verboseMode)
+            System.out.println("Found analyzer:" + aNames[i]);
     }
     Arrays.sort(aNames);
     for (int i = 0; i < aNames.length; i++) {
