@@ -28,8 +28,8 @@ Luke has become somewhat greedy on the perm gen size and thus requires an extra 
 
 Running luke with a custom analyzer
 ====
-Adrien has provided instructions here:
-http://stackoverflow.com/questions/11190245/adding-my-custom-analyzer-to-luke
+
+See [luke.sh](luke.sh) for an example of launching luke with a custom analyzer.
 
 
 Releases
