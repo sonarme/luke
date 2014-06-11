@@ -259,6 +259,13 @@ public final class ClassFinder {
    *          hInterfaces.put(interfaces[i].getName(), interfaces[i]);
    *          getAllInterfaces(interfaces[i], hInterfaces); } }
    */
+
+
+    /**
+     * User user directory for a dot dir
+     * @param paths
+     * @return
+     */
   private static String[] fixDotDirs(String[] paths) {
     for (int i = 0; i < paths.length; i++) {
       paths[i] = fixDotDir(paths[i]);
