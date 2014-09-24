@@ -49,7 +49,6 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.automaton.Automaton;
-import org.apache.lucene.util.automaton.State;
 import org.apache.lucene.util.automaton.Transition;
 import org.getopt.luke.DocReconstructor.Reconstructed;
 import org.getopt.luke.decoders.*;
@@ -89,7 +88,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
 
   private static final long serialVersionUID = -470469999079073156L;
   
-  public static Version LV = Version.LUCENE_4_9;
+  public static Version LV = Version.LATEST;
   
   private Directory dir = null;
   String pName = null;
@@ -1414,7 +1413,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       setChoice(cell, "alignment", "right");
       cell = create("cell");
       add(r, cell);
-      setString(cell, "text", si.info.getVersion());
+      setString(cell, "text", si.info.getVersion().toString());
       cell = create("cell");
       add(r, cell);
       setString(cell, "text", si.info.getCodec().getName());
@@ -4430,7 +4429,47 @@ public class Luke extends Thinlet implements ClipboardOwner {
     Object n = create("node");
     setString(n, "text", "Automaton: " + a != null ? a.toDot() : "null");
     add(parent, n);
+
+      Transition t = new Transition();
+
+      for(int state=0;state<a.getNumStates();state++) {
+          StringBuilder msg = new StringBuilder();
+          msg.append("  ");
+          msg.append(state);
+/*        TODO: needed?
+          if (isAccept(state)) {
+              b.append(" [shape=doublecircle,label=\"" + state + "\"]\n");
+          } else {
+              b.append(" [shape=circle,label=\"" + state + "\"]\n");
+          }
+*/
+          int numTransitions = a.initTransition(state, t);
+          //System.out.println("toDot: state " + state + " has " + numTransitions + " transitions; t.nextTrans=" + t.transitionUpto);
+          for(int i=0;i<numTransitions;i++) {
+              a.getNextTransition(t);
+              //System.out.println("  t.nextTrans=" + t.transitionUpto);
+              assert t.max >= t.min;
+              msg.append("  ");
+              msg.append(state);
+              msg.append(" -> ");
+              msg.append(t.dest);
+              msg.append(" [label=\"");
+              //appendCharString(t.min, b);
+              msg.append(t.min);
+              if (t.max != t.min) {
+                  msg.append('-');
+                  //appendCharString(t.max, b);
+                  msg.append(t.max);
+              }
+              msg.append("\"]\n");
+              //System.out.println("  t=" + t);
+          }
+      }
+
+
+/*
     State[] states = a.getNumberedStates();
+
     for (State s : states) {
       Object n1 = create("node");
       add(n, n1);
@@ -4448,6 +4487,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
         setString(n2, "text", t.toString());
       }
     }
+*/
   }
   
   private void addTermsEnum(Object parent, Class<? extends Query> clz, String field, Query instance) throws Exception {
@@ -4948,7 +4988,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void actionAbout() {
     Object about = addComponent(this, "/xml/about.xml", null, null);
     Object lver = find(about, "lver");
-    setString(lver, "text", "Lucene version: " + Luke.LV.name());
+    setString(lver, "text", "Lucene version: " + Luke.LV.toString());
   }
 
   /**
@@ -5193,7 +5233,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     Luke luke = new Luke();
     DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
     Calendar cal = Calendar.getInstance();
-    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox (" + LV.name() + ")", luke, 850, 650);
+    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox (" + LV.toString() + ")", luke, 850, 650);
     f.setIconImage(Toolkit.getDefaultToolkit().createImage(Luke.class.getResource("/img/luke.gif")));
     if (args.length > 0) {
       boolean force = false, ro = false, ramdir = false;

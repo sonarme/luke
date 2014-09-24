@@ -65,7 +65,11 @@ public class AnalyzerToolPlugin extends LukePlugin {
     app.setString(combobox, "text", firstClass);
     Object aVersion = app.find(myUi, "aVersion");
     app.removeAll(aVersion);
-    Version[] values = Version.values();
+    Version[] values = {
+            Version.LUCENE_3_0_0,
+            Version.LUCENE_3_1_0,
+            Version.LATEST
+    };
     for (int i = 0; i < values.length; i++) {
       Version v = values[i];
       Object choice = app.create("choice");
