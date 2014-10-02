@@ -4426,68 +4426,42 @@ public class Luke extends Thinlet implements ClipboardOwner {
   }
   
   private void addAutomaton(Object parent, Automaton a) {
-    Object n = create("node");
-    setString(n, "text", "Automaton: " + a != null ? a.toDot() : "null");
-    add(parent, n);
+
+      Object n = create("node");
+      setString(n, "text", "Automaton: " + a != null ? a.toDot() : "null");
+      add(parent, n);
 
       Transition t = new Transition();
 
       for(int state=0;state<a.getNumStates();state++) {
+          Object n1 = create("node");
+          add(n, n1);
+
           StringBuilder msg = new StringBuilder();
-          msg.append("  ");
-          msg.append(state);
-/*        TODO: needed?
-          if (isAccept(state)) {
-              b.append(" [shape=doublecircle,label=\"" + state + "\"]\n");
-          } else {
-              b.append(" [shape=circle,label=\"" + state + "\"]\n");
+          msg.append(String.valueOf(state));
+
+          // initial state
+          if (state == 0) {
+              msg.append(" INITIAL");
           }
-*/
+
+          msg.append(a.isAccept(state) ? " [accept]" : " [reject]");
+
           int numTransitions = a.initTransition(state, t);
+
+          msg.append(", " + numTransitions + " transitions");
+          setString(n1, "text", msg.toString());
+
           //System.out.println("toDot: state " + state + " has " + numTransitions + " transitions; t.nextTrans=" + t.transitionUpto);
           for(int i=0;i<numTransitions;i++) {
               a.getNextTransition(t);
-              //System.out.println("  t.nextTrans=" + t.transitionUpto);
+
+              Object n2 = create("node");
+              add(n1, n2);
+              setString(n2, "text", t.toString());
               assert t.max >= t.min;
-              msg.append("  ");
-              msg.append(state);
-              msg.append(" -> ");
-              msg.append(t.dest);
-              msg.append(" [label=\"");
-              //appendCharString(t.min, b);
-              msg.append(t.min);
-              if (t.max != t.min) {
-                  msg.append('-');
-                  //appendCharString(t.max, b);
-                  msg.append(t.max);
-              }
-              msg.append("\"]\n");
-              //System.out.println("  t=" + t);
           }
       }
-
-
-/*
-    State[] states = a.getNumberedStates();
-
-    for (State s : states) {
-      Object n1 = create("node");
-      add(n, n1);
-      StringBuilder msg = new StringBuilder();
-      msg.append(String.valueOf(s.getNumber()));
-      if (a.getInitialState() == s) {
-        msg.append(" INITIAL");
-      }
-      msg.append(s.isAccept() ? " [accept]" : " [reject]");
-      msg.append(", " + s.numTransitions + " transitions");
-      setString(n1, "text", msg.toString());
-      for (Transition t : s.getTransitions()) {
-        Object n2 = create("node");
-        add(n1, n2);
-        setString(n2, "text", t.toString());
-      }
-    }
-*/
   }
   
   private void addTermsEnum(Object parent, Class<? extends Query> clz, String field, Query instance) throws Exception {
