@@ -68,6 +68,22 @@ public class AnalyzerToolPlugin extends LukePlugin {
     Version[] values = {
             Version.LUCENE_3_0_0,
             Version.LUCENE_3_1_0,
+            Version.LUCENE_3_2_0,
+            Version.LUCENE_3_3_0,
+            Version.LUCENE_3_4_0,
+            Version.LUCENE_3_5_0,
+            Version.LUCENE_3_6_0,
+            Version.LUCENE_4_0_0,
+            Version.LUCENE_4_1_0,
+            Version.LUCENE_4_2_0,
+            Version.LUCENE_4_3_0,
+            Version.LUCENE_4_4_0,
+            Version.LUCENE_4_5_0,
+            Version.LUCENE_4_6_0,
+            Version.LUCENE_4_7_0,
+            Version.LUCENE_4_8_0,
+            Version.LUCENE_4_9_0,
+            Version.LUCENE_4_10_0,
             Version.LATEST
     };
     for (int i = 0; i < values.length; i++) {

@@ -1,7 +1,6 @@
 package org.getopt.luke;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -201,8 +200,14 @@ public class BrowserLauncher {
 		loadedWithoutErrors = true;
 		String osName = System.getProperty("os.name");
 		if (osName.startsWith("Mac OS")) {
+
 			String mrjVersion = System.getProperty("mrj.version");
-			String majorMRJVersion = mrjVersion.substring(0, 3);
+            String majorMRJVersion;
+            if (mrjVersion != null) {
+			    majorMRJVersion = mrjVersion.substring(0, 3);
+            } else {
+                majorMRJVersion = System.getProperty("os.version").substring(0, 3);
+            }
 			try {
 				double version = Double.valueOf(majorMRJVersion).doubleValue();
 				if (version == 2) {
