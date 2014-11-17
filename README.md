@@ -31,6 +31,21 @@ Running luke with a custom analyzer
 
 See [luke.sh](luke.sh) for an example of launching luke with a custom analyzer.
 
+Documentation
+====
+The documentation is being written along the way of discovering the luke's usage scenarios.
+
+https://github.com/DmitryKey/luke/wiki
+
+You are free and welcome to contribute you findings!
+
+Feature / bug fix requests
+====
+Found bug? Missing a useful feature? Raise an issue here:
+
+https://github.com/DmitryKey/luke/issues
+
+Or, and btw, the pull requests are welcome as well!
 
 Releases
 ====
