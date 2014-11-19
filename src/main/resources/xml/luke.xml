@@ -60,11 +60,11 @@
 				  <panel columns="1" gap="2" valign="fill" halign="fill" weighty="1" weightx="1">
             <label text="Available fields and term counts per field:" halign="fill" weightx="1"/>
 						<table name="fList" selection="multiple" weighty="1" valign="fill" weightx="1" halign="fill">
-						  <header>
-						          <column text="Name" sort="ascent"/>
-						          <column text="Term count" alignment="center"/>
-						          <column text=" % " alignment="center"/>
-						          <column text=" Decoder" alignment="center"/>
+						  <header action="sort(fList, this)">
+						          <column text="Name" name="Name"/>
+						          <column text="Term count" alignment="center" name="Term"/>
+						          <column text=" % " alignment="center" sort="ascent" name="%"/>
+						          <column text=" Decoder" alignment="center" name="Decoder"/>
 						  </header>
 						</table>
             <panel gap="2" weightx="1" halign="right">

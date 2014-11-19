@@ -1132,8 +1132,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       final Object fList = find(pOver, "fList");
       final Object defFld = find("defFld");
       final Object fCombo = find("fCombo");
-      TreeSet<String> fields = new TreeSet<String>(fn);
-      idxFields = (String[])fields.toArray(new String[fields.size()]);
+      idxFields = fn.toArray(new String[fn.size()]);
       setString(iFields, "text", String.valueOf(idxFields.length));
       final Object iTerms = find(pOver, "iTerms");
       if (!slowAccess) {
@@ -1235,58 +1234,16 @@ public class Luke extends Thinlet implements ClipboardOwner {
     intCountFormat.setGroupingUsed(true);
     percentFormat.setMaximumFractionDigits(2);
     // sort by names now
-    for (String s : idxFields) {
-      Object row = create("row");
-      putProperty(row, "fName", s);
-      add(fList, row);
-      Object cell = create("cell");
-      setString(cell, "text", s);
-      add(row, cell);
-      if (termCounts != null) {
-        cell = create("cell");
-        FieldTermCount ftc = termCounts.get(s);
-        if (ftc != null) {
-          long cnt = ftc.termCount;
-          setString(cell, "text", intCountFormat.format(cnt));
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-          float pcent = (float)(cnt * 100) / (float)numTerms;
-          cell = create("cell");
-          setString(cell, "text", percentFormat.format(pcent) + " %");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-        } else {
-          setString(cell, "text", "0");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-          cell = create("cell");
-          setString(cell, "text", "0.00 %");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-        }
-      } else {
-        cell = create("cell");
-        setString(cell, "text", "N/A");
-        add(row, cell);
-        cell = create("cell");
-        add(row, cell);
-      }
-      cell = create("cell");
-      setChoice(cell, "alignment", "right");
-      Decoder dec = decoders.get(s);
-      if (dec == null) dec = defDecoder;
-      setString(cell, "text", dec.toString());
-      add(row, cell);
-      // populate combos
-      Object choice = create("choice");
-      add(fCombo, choice);
-      setString(choice, "text", s);
-      putProperty(choice, "fName", s);
-      choice = create("choice");
-      add(defFld, choice);
-      setString(choice, "text", s);
-      putProperty(choice, "fName", s);
-    }
+    String[] idxFieldsCopy = idxFields.clone();
+
+      // sort by term count
+      ValueComparator bvc =  new ValueComparator(termCounts);
+      TreeMap<String,FieldTermCount> termCountsSorted = new TreeMap<String,FieldTermCount>(bvc);
+      termCountsSorted.putAll(termCounts);
+      String[] idxFieldsCopySorted = termCountsSorted.keySet().toArray(new String[idxFieldsCopy.length]);
+
+    populateFieldGrid(fList, fCombo, defFld, intCountFormat, percentFormat, idxFieldsCopySorted);
+
     setString(find("defFld"), "text", idxFields[0]);
     // Remove columns
     Object header = get(find("sTable"), "header");
@@ -1309,8 +1266,83 @@ public class Luke extends Thinlet implements ClipboardOwner {
       add(header, c);
     }
   }
-  
-  private void showCommits() throws Exception {
+
+    class ValueComparator implements Comparator<String> {
+
+        Map<String, FieldTermCount> base;
+        public ValueComparator(Map<String, FieldTermCount> base) {
+            this.base = base;
+        }
+
+        // Note: this comparator imposes orderings that are inconsistent with equals.
+        public int compare(String a, String b) {
+/*
+            if (base.get(a) >= base.get(b)) {
+                return -1;
+            } else {
+                return 1;
+            } // returning 0 would merge keys
+*/
+            return base.get(a).compareToValues(base.get(b));
+        }
+    }
+
+    private void populateFieldGrid(Object fList, Object fCombo, Object defFld, NumberFormat intCountFormat, NumberFormat percentFormat, String[] idxFieldsCopy) {
+        for (String s : idxFieldsCopy) {
+          Object row = create("row");
+          putProperty(row, "fName", s);
+          add(fList, row);
+          Object cell = create("cell");
+          setString(cell, "text", s);
+          add(row, cell);
+          if (termCounts != null) {
+            cell = create("cell");
+            FieldTermCount ftc = termCounts.get(s);
+            if (ftc != null) {
+              long cnt = ftc.termCount;
+              setString(cell, "text", intCountFormat.format(cnt));
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+              float pcent = (float)(cnt * 100) / (float)numTerms;
+              cell = create("cell");
+              setString(cell, "text", percentFormat.format(pcent) + " %");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+            } else {
+              setString(cell, "text", "0");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+              cell = create("cell");
+              setString(cell, "text", "0.00 %");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+            }
+          } else {
+            cell = create("cell");
+            setString(cell, "text", "N/A");
+            add(row, cell);
+            cell = create("cell");
+            add(row, cell);
+          }
+          cell = create("cell");
+          setChoice(cell, "alignment", "right");
+          Decoder dec = decoders.get(s);
+          if (dec == null) dec = defDecoder;
+          setString(cell, "text", dec.toString());
+          add(row, cell);
+          // populate combos
+          Object choice = create("choice");
+          add(fCombo, choice);
+          setString(choice, "text", s);
+          putProperty(choice, "fName", s);
+          choice = create("choice");
+          add(defFld, choice);
+          setString(choice, "text", s);
+          putProperty(choice, "fName", s);
+        }
+    }
+
+    private void showCommits() throws Exception {
     Object commitsTable = find("commitsTable");
     removeAll(commitsTable);
     if (dir == null) {
@@ -5291,6 +5323,17 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public int getNumTerms() {
     return numTerms;
   }
+
+    public void sort(Object grid, Object header) {
+        final Object defFld = find("defFld");
+        final Object fCombo = find("fCombo");
+        //tableUtil.sort(businessLicences, header);
+        initFieldList(grid, fCombo, defFld);
+    }
+
+    public void setColumn(String name) {
+        System.out.println("name="+name);
+    }
 
 }
 
