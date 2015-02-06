@@ -1,3 +1,8 @@
+* Update to 4.10.3
+
+(work in progress)
+https://github.com/DmitryKey/luke/issues/13 Ehcache upgraded to the latest version 2.9.0 (affects Hadoop plugin users)
+
 * Update to 4.10.1
 
 Changes:
