@@ -1,3 +1,10 @@
+* Update to 4.10.1
+
+Changes:
+https://github.com/DmitryKey/luke/issues/5
+https://github.com/DmitryKey/luke/issues/6
+
+
 * Update to 4.8.0
 
 This is a trivial update (maven, no code changes), but a required one: index version changed.
