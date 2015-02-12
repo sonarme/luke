@@ -85,5 +85,5 @@ There is no separate luke 4.4.0 release, but luke 4.5.0 should open the Lucene 4
 Licensing
 ===
 
-The license for the code is [ASL 2.0](http://www.apache.org/licenses/LICENSE-2.0.html), excluding the license of the
+The license for the code is [ALv2](http://www.apache.org/licenses/LICENSE-2.0.html), excluding the license of the
 thinlet library that is used for the UI.
