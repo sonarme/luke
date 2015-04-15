@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Collection;
@@ -40,6 +41,9 @@ import java.util.Random;
  * with the same purpose found in org.apache.nutch.indexer. */
 public class FsDirectory extends Directory {
   private static final Logger LOG = LoggerFactory.getLogger(FsDirectory.class);
+
+    Lock lock;
+    LockFactory lockFactory;
 
   private FileSystem fs;
   private Path directory;
@@ -81,7 +85,7 @@ public class FsDirectory extends Directory {
       create();
     }
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException(directory + " not a directory");
   }
 
@@ -91,7 +95,7 @@ public class FsDirectory extends Directory {
       reporter.reportStatus("Created " + directory);
     }
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException(directory + " not a directory");
 
     // clear old files
@@ -169,26 +173,33 @@ public class FsDirectory extends Directory {
   }
 
   public Lock makeLock(final String name) {
-    return new Lock() {
-      public boolean obtain() {
-        return true;
+      if (lock == null) {
+          lock = lockFactory.makeLock(name);
       }
-      public void release() {
-      }
-      public boolean isLocked() {
-        throw new UnsupportedOperationException();
-      }
-      public String toString() {
-        return "Lock@" + new Path(directory, name);
-      }
-    };
+      return lock;
   }
 
-  public synchronized void close() throws IOException {
+    @Override
+    public void clearLock(String s) throws IOException {
+        lock.close();
+        lock = null;
+    }
+
+    public synchronized void close() throws IOException {
     fs.close();
   }
 
-  public String toString() {
+    @Override
+    public void setLockFactory(LockFactory _lockFactory) throws IOException {
+        lockFactory = _lockFactory;
+    }
+
+    @Override
+    public LockFactory getLockFactory() {
+        return lockFactory;
+    }
+
+    public String toString() {
     return this.getClass().getName() + "@" + directory;
   }
 
@@ -283,14 +294,15 @@ public class FsDirectory extends Directory {
     }
   }
 
-  private class DfsIndexOutput extends BufferedIndexOutput {
+  private class DfsIndexOutput extends OutputStreamIndexOutput {
     private FSDataOutputStream out;
     private RandomAccessFile local;
     private File localFile;
 
     public DfsIndexOutput(Path path, int ioFileBufferSize) throws IOException {
-      
-      // create a temporary local file and set it to delete on exit
+        super(new FileOutputStream(new File(path.toUri())), ioFileBufferSize);
+
+        // create a temporary local file and set it to delete on exit
       String randStr = Integer.toString(new Random().nextInt(Integer.MAX_VALUE));
       localFile = File.createTempFile("index_" + randStr, ".tmp");
       localFile.deleteOnExit();
@@ -323,27 +335,29 @@ public class FsDirectory extends Directory {
       local.seek(pos);
     }
 
-      /**
-       * Set the file length. By default, this method does
-       * nothing (it's optional for a Directory to implement
-       * it).  But, certain Directory implementations (for
-       * example @see FSDirectory) can use this to inform the
-       * underlying IO system to pre-allocate the file to the
-       * specified size.  If the length is longer than the
-       * current file length, the bytes added to the file are
-       * undefined.  Otherwise the file is truncated.
-       *
-       * @param length file length
-       */
-      @Override
-      public void setLength(long length) throws IOException {
-          super.setLength(length);
-          local.setLength(length);
-      }
+// TODO: remove?
+//      /**
+//       * Set the file length. By default, this method does
+//       * nothing (it's optional for a Directory to implement
+//       * it).  But, certain Directory implementations (for
+//       * example @see FSDirectory) can use this to inform the
+//       * underlying IO system to pre-allocate the file to the
+//       * specified size.  If the length is longer than the
+//       * current file length, the bytes added to the file are
+//       * undefined.  Otherwise the file is truncated.
+//       *
+//       * @param length file length
+//       */
+//      @Override
+//      public void setLength(long length) throws IOException {
+//          super.setLength(length);
+//          local.setLength(length);
+//      }
 
-      public long length() throws IOException {
-      return local.length();
-    }
+// TODO: remove?
+//      public long length() throws IOException {
+//      return local.length();
+//    }
 
   }
 

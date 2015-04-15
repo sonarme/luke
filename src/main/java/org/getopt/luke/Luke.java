@@ -16,54 +16,6 @@
  */
 package org.getopt.luke;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.zip.GZIPOutputStream;
-
-import javax.swing.JFileChooser;
-import javax.swing.UIManager;
-
-import org.apache.lucene.LucenePackage;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
@@ -75,103 +27,54 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.CheckIndex;
-import org.apache.lucene.index.CheckIndex.Status.SegmentInfoStatus;
-import org.apache.lucene.index.CompositeReader;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocsAndPositionsEnum;
-import org.apache.lucene.index.DocsEnum;
-import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.*;
 import org.apache.lucene.index.FieldInfo.IndexOptions;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.index.IndexCommit;
-import org.apache.lucene.index.IndexDeletionPolicy;
-import org.apache.lucene.index.IndexFileNames;
-import org.apache.lucene.index.IndexGate;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.IndexableFieldType;
-import org.apache.lucene.index.LogMergePolicy;
-import org.apache.lucene.index.MergePolicy;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.index.NumericDocValues;
-import org.apache.lucene.index.SegmentInfoPerCommit;
-import org.apache.lucene.index.SegmentInfos;
-import org.apache.lucene.index.SegmentReader;
-import org.apache.lucene.index.SlowCompositeReaderWrapper;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.index.TermsEnum.SeekStatus;
-import org.apache.lucene.index.TieredMergePolicy;
 import org.apache.lucene.misc.SweetSpotSimilarity;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.xml.CoreParser;
 import org.apache.lucene.queryparser.xml.CorePlusExtensionsParser;
-import org.apache.lucene.search.AutomatonQuery;
-import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.ConstantScoreQuery;
-import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.FilteredQuery;
-import org.apache.lucene.search.FuzzyQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiPhraseQuery;
-import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.payloads.PayloadNearQuery;
 import org.apache.lucene.search.payloads.PayloadTermQuery;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
-import org.apache.lucene.search.spans.SpanFirstQuery;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanNotQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.store.CompoundFileDirectory;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.LockFactory;
-import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.search.spans.*;
+import org.apache.lucene.store.*;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.automaton.Automaton;
-import org.apache.lucene.util.automaton.State;
 import org.apache.lucene.util.automaton.Transition;
 import org.getopt.luke.DocReconstructor.Reconstructed;
-import org.getopt.luke.decoders.BinaryDecoder;
-import org.getopt.luke.decoders.DateDecoder;
-import org.getopt.luke.decoders.Decoder;
-import org.getopt.luke.decoders.NumIntDecoder;
-import org.getopt.luke.decoders.NumLongDecoder;
-import org.getopt.luke.decoders.SolrDecoder;
-import org.getopt.luke.decoders.StringDecoder;
+import org.getopt.luke.decoders.*;
 import org.getopt.luke.plugins.ScriptingPlugin;
 import org.getopt.luke.xmlQuery.CorePlusExtensionsParserFactory;
 import org.getopt.luke.xmlQuery.XmlQueryParserFactory;
-
 import thinlet.FrameLauncher;
 import thinlet.Thinlet;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * This class allows you to browse a <a href="jakarta.apache.org/lucene">Lucene
@@ -185,7 +88,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
 
   private static final long serialVersionUID = -470469999079073156L;
   
-  public static Version LV = Version.LUCENE_43;
+  public static Version LV = Version.LATEST;
   
   private Directory dir = null;
   String pName = null;
@@ -204,12 +107,14 @@ public class Luke extends Thinlet implements ClipboardOwner {
   private Object statmsg = null;
   private Object slowstatus = null;
   private Object slowmsg = null;
-  private Analyzer stdAnalyzer = new StandardAnalyzer(LV);
+  // never read
+  //private Analyzer stdAnalyzer = new StandardAnalyzer(LV);
   //private QueryParser qp = null;
   private boolean readOnly = false;
   private boolean ram = false;
   private boolean keepCommits = false;
-  private boolean multi = false;
+  // never read
+  //private boolean multi = false;
   private int tiiDiv = 1;
   private IndexCommit currentCommit = null;
   private Similarity similarity = null;
@@ -252,8 +157,9 @@ public class Luke extends Thinlet implements ClipboardOwner {
   private static final String MSG_CONV_ERROR = "Some values could not be properly represented in this format. " + 
                       "They are marked in grey and presented as a hex dump.";
   private static final String MSG_LUCENE3828 = "Sorry. This functionality doesn't work with Lucene trunk. See LUCENE-3828 for more details.";
+    public static final boolean verboseMode = false; // can create lots of std output
 
-  /** Default constructor, loads preferences, initializes plugins and GUI. */ 
+    /** Default constructor, loads preferences, initializes plugins and GUI. */
   public Luke() {
     super();
     Prefs.load();
@@ -277,7 +183,11 @@ public class Luke extends Thinlet implements ClipboardOwner {
     slowmsg = find(slowstatus, "slowmsg");
     // populate analyzers
     try {
-      Class[] an = ClassFinder.getInstantiableSubclasses(Analyzer.class);
+        if (verboseMode) {
+            System.out.println("Populating analyzers");
+        }
+
+        Class[] an = ClassFinder.getInstantiableSubclasses(Analyzer.class);
       if (an == null || an.length == 0) {
         System.err.println("No analyzers???");
         analyzers = defaultAnalyzers;
@@ -337,8 +247,12 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void populateAnalyzers(Object combo) {
     removeAll(combo);
     String[] aNames = new String[analyzers.length];
+      if (verboseMode)
+        System.out.println("Populating analyzers...");
     for (int i = 0; i < analyzers.length; i++) {
       aNames[i] = analyzers[i].getName();
+        if (verboseMode)
+            System.out.println("Found analyzer:" + aNames[i]);
     }
     Arrays.sort(aNames);
     for (int i = 0; i < aNames.length; i++) {
@@ -706,7 +620,8 @@ public class Luke extends Thinlet implements ClipboardOwner {
   /**
    * Attempt to load the index with parameters specified in the dialog.
    * <p>NOTE: this method is invoked from the UI. If you need to open an index
-   * programmatically, you should use {@link #openIndex(String, boolean, boolean, boolean)} instead.</p>
+   * programmatically, you should use {@link: openIndex(String, boolean, String, boolean,
+          boolean, boolean , IndexCommit, int)} instead.</p>
    * @param dialog UI dialog with parameters
    */
   public void openOk(Object dialog) {
@@ -873,12 +788,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
         policy = new KeepLastIndexDeletionPolicy();
       }
       cfg.setIndexDeletionPolicy(policy);
-      MergePolicy mp = cfg.getMergePolicy();
-      if (mp instanceof LogMergePolicy) {
-        ((LogMergePolicy)mp).setUseCompoundFile(IndexGate.preferCompoundFormat(dir));
-      } else if (mp instanceof TieredMergePolicy) {
-        ((TieredMergePolicy)cfg.getMergePolicy()).setUseCompoundFile(IndexGate.preferCompoundFormat(dir));
-      }
+      cfg.setUseCompoundFile(IndexGate.preferCompoundFormat(dir));
       IndexWriter iw = new IndexWriter(dir, cfg);
       return iw;
     } catch (Exception e) {
@@ -919,10 +829,10 @@ public class Luke extends Thinlet implements ClipboardOwner {
   
   /**
    * Open indicated index and re-initialize all GUI and plugins.
-   * @param pName path to index
+   * @param name path to index
    * @param force if true, and the index is locked, unlock it first. If false, and
    * the index is locked, an error will be reported.
-   * @param readOnly open in read-only mode, and disallow modifications.
+   * @param ro open in read-only mode, and disallow modifications.
    */
   public void openIndex(String name, boolean force, String dirImpl, boolean ro,
       boolean ramdir, boolean keepCommits, IndexCommit point, int tiiDivisor) {
@@ -1096,9 +1006,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       return null;
     }
     if (res != null) return res;
-    // fall-back to FSDirectory.
-    if (res == null) return FSDirectory.open(f);
-    return null;
+    return FSDirectory.open(f);
   }
   
   /**
@@ -1213,7 +1121,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       }
       showFiles(dir, null);
       if (ir instanceof CompositeReader) {
-        ar = new SlowCompositeReaderWrapper((CompositeReader)ir);
+        ar = SlowCompositeReaderWrapper.wrap(ir);
       } else if (ir instanceof AtomicReader) {
         ar = (AtomicReader)ir;
       }
@@ -1224,8 +1132,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       final Object fList = find(pOver, "fList");
       final Object defFld = find("defFld");
       final Object fCombo = find("fCombo");
-      TreeSet<String> fields = new TreeSet<String>(fn);
-      idxFields = (String[])fields.toArray(new String[fields.size()]);
+      idxFields = fn.toArray(new String[fn.size()]);
       setString(iFields, "text", String.valueOf(idxFields.length));
       final Object iTerms = find(pOver, "iTerms");
       if (!slowAccess) {
@@ -1327,58 +1234,16 @@ public class Luke extends Thinlet implements ClipboardOwner {
     intCountFormat.setGroupingUsed(true);
     percentFormat.setMaximumFractionDigits(2);
     // sort by names now
-    for (String s : idxFields) {
-      Object row = create("row");
-      putProperty(row, "fName", s);
-      add(fList, row);
-      Object cell = create("cell");
-      setString(cell, "text", s);
-      add(row, cell);
-      if (termCounts != null) {
-        cell = create("cell");
-        FieldTermCount ftc = termCounts.get(s);
-        if (ftc != null) {
-          long cnt = ftc.termCount;
-          setString(cell, "text", intCountFormat.format(cnt));
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-          float pcent = (float)(cnt * 100) / (float)numTerms;
-          cell = create("cell");
-          setString(cell, "text", percentFormat.format(pcent) + " %");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-        } else {
-          setString(cell, "text", "0");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-          cell = create("cell");
-          setString(cell, "text", "0.00 %");
-          setChoice(cell, "alignment", "right");
-          add(row, cell);
-        }
-      } else {
-        cell = create("cell");
-        setString(cell, "text", "N/A");
-        add(row, cell);
-        cell = create("cell");
-        add(row, cell);
-      }
-      cell = create("cell");
-      setChoice(cell, "alignment", "right");
-      Decoder dec = decoders.get(s);
-      if (dec == null) dec = defDecoder;
-      setString(cell, "text", dec.toString());
-      add(row, cell);
-      // populate combos
-      Object choice = create("choice");
-      add(fCombo, choice);
-      setString(choice, "text", s);
-      putProperty(choice, "fName", s);
-      choice = create("choice");
-      add(defFld, choice);
-      setString(choice, "text", s);
-      putProperty(choice, "fName", s);
-    }
+    String[] idxFieldsCopy = idxFields.clone();
+
+      // sort by term count
+      ValueComparator bvc =  new ValueComparator(termCounts);
+      TreeMap<String,FieldTermCount> termCountsSorted = new TreeMap<String,FieldTermCount>(bvc);
+      termCountsSorted.putAll(termCounts);
+      String[] idxFieldsCopySorted = termCountsSorted.keySet().toArray(new String[idxFieldsCopy.length]);
+
+    populateFieldGrid(fList, fCombo, defFld, intCountFormat, percentFormat, idxFieldsCopySorted);
+
     setString(find("defFld"), "text", idxFields[0]);
     // Remove columns
     Object header = get(find("sTable"), "header");
@@ -1401,8 +1266,83 @@ public class Luke extends Thinlet implements ClipboardOwner {
       add(header, c);
     }
   }
-  
-  private void showCommits() throws Exception {
+
+    class ValueComparator implements Comparator<String> {
+
+        Map<String, FieldTermCount> base;
+        public ValueComparator(Map<String, FieldTermCount> base) {
+            this.base = base;
+        }
+
+        // Note: this comparator imposes orderings that are inconsistent with equals.
+        public int compare(String a, String b) {
+/*
+            if (base.get(a) >= base.get(b)) {
+                return -1;
+            } else {
+                return 1;
+            } // returning 0 would merge keys
+*/
+            return base.get(a).compareToValues(base.get(b));
+        }
+    }
+
+    private void populateFieldGrid(Object fList, Object fCombo, Object defFld, NumberFormat intCountFormat, NumberFormat percentFormat, String[] idxFieldsCopy) {
+        for (String s : idxFieldsCopy) {
+          Object row = create("row");
+          putProperty(row, "fName", s);
+          add(fList, row);
+          Object cell = create("cell");
+          setString(cell, "text", s);
+          add(row, cell);
+          if (termCounts != null) {
+            cell = create("cell");
+            FieldTermCount ftc = termCounts.get(s);
+            if (ftc != null) {
+              long cnt = ftc.termCount;
+              setString(cell, "text", intCountFormat.format(cnt));
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+              float pcent = (float)(cnt * 100) / (float)numTerms;
+              cell = create("cell");
+              setString(cell, "text", percentFormat.format(pcent) + " %");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+            } else {
+              setString(cell, "text", "0");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+              cell = create("cell");
+              setString(cell, "text", "0.00 %");
+              setChoice(cell, "alignment", "right");
+              add(row, cell);
+            }
+          } else {
+            cell = create("cell");
+            setString(cell, "text", "N/A");
+            add(row, cell);
+            cell = create("cell");
+            add(row, cell);
+          }
+          cell = create("cell");
+          setChoice(cell, "alignment", "right");
+          Decoder dec = decoders.get(s);
+          if (dec == null) dec = defDecoder;
+          setString(cell, "text", dec.toString());
+          add(row, cell);
+          // populate combos
+          Object choice = create("choice");
+          add(fCombo, choice);
+          setString(choice, "text", s);
+          putProperty(choice, "fName", s);
+          choice = create("choice");
+          add(defFld, choice);
+          setString(choice, "text", s);
+          putProperty(choice, "fName", s);
+        }
+    }
+
+    private void showCommits() throws Exception {
     Object commitsTable = find("commitsTable");
     removeAll(commitsTable);
     if (dir == null) {
@@ -1485,7 +1425,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       errorMsg("Error reading segment infos for '" + segName + ": " + e.toString());
       return;
     }
-    for (SegmentInfoPerCommit si : infos.asList()) {
+    for (SegmentCommitInfo si : infos.asList()) {
       Object r = create("row");
       add(segTable, r);
       Object cell = create("cell");
@@ -1505,7 +1445,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
       setChoice(cell, "alignment", "right");
       cell = create("cell");
       add(r, cell);
-      setString(cell, "text", si.info.getVersion());
+      setString(cell, "text", si.info.getVersion().toString());
       cell = create("cell");
       add(r, cell);
       setString(cell, "text", si.info.getCodec().getName());
@@ -1531,7 +1471,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     if (row == null) {
       return;
     }
-    SegmentInfoPerCommit si = (SegmentInfoPerCommit)getProperty(row, "si");
+    SegmentCommitInfo si = (SegmentCommitInfo)getProperty(row, "si");
     if (si == null) {
       showStatus("Missing SegmentInfoPerCommit???");
       return;
@@ -2114,22 +2054,10 @@ public class Luke extends Thinlet implements ClipboardOwner {
           errorMsg("You need to run 'Check Index' first.");
           return;
         }
-        // use codec from the first valid segment
-        Codec c = null;
-        for (SegmentInfoStatus ssi : status.segmentInfos) {
-          if (ssi.codec != null) {
-            c = ssi.codec;
-            break;
-          }
-        }
-        if (c == null) {
-          showStatus("Can't determine Codec, using default");
-          c = Codec.getDefault();
-        }
         Object fixRes = find(dialog, "fixRes");
         PanelPrintWriter ppw = (PanelPrintWriter)getProperty(dialog, "ppw");
         try {
-          ci.fixIndex(status, c);
+          ci.fixIndex(status);
           setString(fixRes, "text", "DONE. Review the output above.");
         } catch (Exception e) {
           ppw.println("\nERROR during Fix Index:");
@@ -2429,7 +2357,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   
   /**
    * Optimize the current index
-   * @param method Thinlet menuitem widget containing the choice of index format.
+   * Method of optimization is derived from the Thinlet menuitem widget containing the choice of index format.
    * If the widget name is "optCompound" then the index will be optimized into compound
    * format; otherwise a plain multi-file format will be used.
    * <p>NOTE: this method is usually invoked from the GUI, and it also re-initializes GUI
@@ -2491,18 +2419,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
           }
           cfg.setIndexDeletionPolicy(policy);
           cfg.setTermIndexInterval(tii);
-          MergePolicy p = cfg.getMergePolicy();
-          if (p instanceof LogMergePolicy) {
-            ((LogMergePolicy)p).setUseCompoundFile(useCompound);
-            if (useCompound) {
-              ((LogMergePolicy)p).setNoCFSRatio(1.0);
-            }
-          } else if (p instanceof TieredMergePolicy) {
-            ((TieredMergePolicy)p).setUseCompoundFile(useCompound);            
-            if (useCompound) {
-              ((TieredMergePolicy)p).setNoCFSRatio(1.0);
-            }
-          }
+          cfg.setUseCompoundFile(useCompound);
           cfg.setInfoStream(ppw);
           iw = new IndexWriter(dir, cfg);
           long startSize = Util.calcTotalFileSize(pName, dir);
@@ -3262,10 +3179,10 @@ public class Luke extends Thinlet implements ClipboardOwner {
     setString(sim, "text", s.getClass().getName());
     try {
       float newFVal = Float.parseFloat(getString(newNorm, "text"));
-      byte newBVal = Util.encodeNormValue(newFVal, f.name(), s);
+      long newBVal = Util.encodeNormValue(newFVal, f.name(), s);
       float encFVal = Util.decodeNormValue(newBVal, f.name(), s);
       setString(encNorm, "text", String.valueOf(encFVal) +
-          " (0x" + Util.byteToHex(newBVal) + ")");
+          " (0x" + Util.byteToHex((byte)(newBVal & 0xFF)) + ")");
       putProperty(dialog, "newNorm", new Float(newFVal));
       doLayout(dialog);
     } catch (Exception e) {
@@ -4541,27 +4458,42 @@ public class Luke extends Thinlet implements ClipboardOwner {
   }
   
   private void addAutomaton(Object parent, Automaton a) {
-    Object n = create("node");
-    setString(n, "text", "Automaton: " + a != null ? a.toDot() : "null");
-    add(parent, n);
-    State[] states = a.getNumberedStates();
-    for (State s : states) {
-      Object n1 = create("node");
-      add(n, n1);
-      StringBuilder msg = new StringBuilder();
-      msg.append(String.valueOf(s.getNumber()));
-      if (a.getInitialState() == s) {
-        msg.append(" INITIAL");
+
+      Object n = create("node");
+      setString(n, "text", "Automaton: " + a != null ? a.toDot() : "null");
+      add(parent, n);
+
+      Transition t = new Transition();
+
+      for(int state=0;state<a.getNumStates();state++) {
+          Object n1 = create("node");
+          add(n, n1);
+
+          StringBuilder msg = new StringBuilder();
+          msg.append(String.valueOf(state));
+
+          // initial state
+          if (state == 0) {
+              msg.append(" INITIAL");
+          }
+
+          msg.append(a.isAccept(state) ? " [accept]" : " [reject]");
+
+          int numTransitions = a.initTransition(state, t);
+
+          msg.append(", " + numTransitions + " transitions");
+          setString(n1, "text", msg.toString());
+
+          //System.out.println("toDot: state " + state + " has " + numTransitions + " transitions; t.nextTrans=" + t.transitionUpto);
+          for(int i=0;i<numTransitions;i++) {
+              a.getNextTransition(t);
+
+              Object n2 = create("node");
+              add(n1, n2);
+              setString(n2, "text", t.toString());
+              assert t.max >= t.min;
+          }
       }
-      msg.append(s.isAccept() ? " [accept]" : " [reject]");
-      msg.append(", " + s.numTransitions + " transitions");
-      setString(n1, "text", msg.toString());
-      for (Transition t : s.getTransitions()) {
-        Object n2 = create("node");
-        add(n1, n2);
-        setString(n2, "text", t.toString());
-      }
-    }
   }
   
   private void addTermsEnum(Object parent, Class<? extends Query> clz, String field, Query instance) throws Exception {
@@ -5062,7 +4994,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public void actionAbout() {
     Object about = addComponent(this, "/xml/about.xml", null, null);
     Object lver = find(about, "lver");
-    setString(lver, "text", "Lucene version: " + LucenePackage.get().getImplementationVersion());
+    setString(lver, "text", "Lucene version: " + Luke.LV.toString());
   }
 
   /**
@@ -5307,7 +5239,7 @@ public class Luke extends Thinlet implements ClipboardOwner {
     Luke luke = new Luke();
     DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
     Calendar cal = Calendar.getInstance();
-    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox, v 4.3.0 (" + dateFormat.format(cal.getTime()) + ")", luke, 850, 650);
+    FrameLauncher f = new FrameLauncher("Luke - Lucene Index Toolbox (" + LV.toString() + ")", luke, 850, 650);
     f.setIconImage(Toolkit.getDefaultToolkit().createImage(Luke.class.getResource("/img/luke.gif")));
     if (args.length > 0) {
       boolean force = false, ro = false, ramdir = false;
@@ -5391,6 +5323,17 @@ public class Luke extends Thinlet implements ClipboardOwner {
   public int getNumTerms() {
     return numTerms;
   }
+
+    public void sort(Object grid, Object header) {
+        final Object defFld = find("defFld");
+        final Object fCombo = find("fCombo");
+        //tableUtil.sort(businessLicences, header);
+        initFieldList(grid, fCombo, defFld);
+    }
+
+    public void setColumn(String name) {
+        System.out.println("name="+name);
+    }
 
 }
 

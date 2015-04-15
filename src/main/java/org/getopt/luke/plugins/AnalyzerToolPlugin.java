@@ -1,25 +1,19 @@
 package org.getopt.luke.plugins;
 
-import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.util.Iterator;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.FlagsAttribute;
-import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PayloadAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.analysis.tokenattributes.*;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
+import org.getopt.luke.Luke;
 import org.getopt.luke.LukePlugin;
 import org.getopt.luke.Util;
+
+import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
 
 public class AnalyzerToolPlugin extends LukePlugin {
 
@@ -71,14 +65,34 @@ public class AnalyzerToolPlugin extends LukePlugin {
     app.setString(combobox, "text", firstClass);
     Object aVersion = app.find(myUi, "aVersion");
     app.removeAll(aVersion);
-    Version[] values = Version.values();
+    Version[] values = {
+            Version.LUCENE_3_0_0,
+            Version.LUCENE_3_1_0,
+            Version.LUCENE_3_2_0,
+            Version.LUCENE_3_3_0,
+            Version.LUCENE_3_4_0,
+            Version.LUCENE_3_5_0,
+            Version.LUCENE_3_6_0,
+            Version.LUCENE_4_0_0,
+            Version.LUCENE_4_1_0,
+            Version.LUCENE_4_2_0,
+            Version.LUCENE_4_3_0,
+            Version.LUCENE_4_4_0,
+            Version.LUCENE_4_5_0,
+            Version.LUCENE_4_6_0,
+            Version.LUCENE_4_7_0,
+            Version.LUCENE_4_8_0,
+            Version.LUCENE_4_9_0,
+            Version.LUCENE_4_10_0,
+            Version.LATEST
+    };
     for (int i = 0; i < values.length; i++) {
       Version v = values[i];
       Object choice = app.create("choice");
       app.setString(choice, "text", v.toString());
       app.putProperty(choice, "version", v);
       app.add(aVersion, choice);
-      if (v.equals(Version.LUCENE_CURRENT)) {
+      if (v.equals(Luke.LV)) {
         app.setInteger(aVersion, "selected", i);
       }
     }
@@ -109,16 +123,21 @@ public class AnalyzerToolPlugin extends LukePlugin {
           return;
         }
       }
-      TokenStream ts = analyzer.tokenStream("text", new StringReader(app
+
+
+        TokenStream ts = analyzer.tokenStream("text", new StringReader(app
               .getString(inputText, "text")));
+        ts.reset();
+
       app.removeAll(resultsList);
 
       while (ts.incrementToken()) {
         Object row = app.create("item");
-        app.setString(row, "text", ((CharTermAttribute)ts.getAttribute(CharTermAttribute.class)).toString());
+        app.setString(row, "text", (ts.getAttribute(CharTermAttribute.class)).toString());
         app.add(resultsList, row);
         app.putProperty(row, "state", ts.cloneAttributes());
       }
+        ts.close();
     } catch (Throwable t) {
       app.showStatus("Error analyzing:" + t.getMessage());
     }

@@ -1,3 +1,60 @@
+* Update to 4.10.3
+
+(work in progress)
+https://github.com/DmitryKey/luke/issues/13 Ehcache upgraded to the latest version 2.9.0 (affects Hadoop plugin users)
+
+* Update to 4.10.1
+
+Changes:
+https://github.com/DmitryKey/luke/issues/5
+https://github.com/DmitryKey/luke/issues/6
+
+
+* Update to 4.8.0
+
+This is a trivial update (maven, no code changes), but a required one: index version changed.
+
+This version has also been tested for loading index from HDFS of hadoop 2.2.0 running in pseudo distributed mode.
+
+* Update to 4.7.0
+
+Release based on pull request of Petri Kivikangas (https://github.com/DmitryKey/luke/pull/2)
+Tested against the solr-4.7.0 index.
+
+1. Upgraded maven plugins
+2. Added simple Windows launch script: In Windows, Luke can now be launched easily by executing luke.bat.
+                                       Script sets MaxPermSize to 512m because Luke was found to crash on lower
+                                       settings.
+
+* Update to 4.6.1
+
+upgraded to the latest Apache Lucene 4.6.1 release.
+
+fixes:
+loading the jar from command line is now working fine.
+
+* Update to 4.6.0
+
+port to Lucene 4.6.
+Tested against the solr-4.6 index of exampledocs xml files. 
+Changelist: 
+1. bumped up the version of maven-assembly plugin to the latest 2.4
+2. added maven-jar plugin which copies all binary dependencies into lib/ subdirectory 
+3. Fixed AnalyzerToolPlugin to use token stream reset outside while loop over tokens 
+4. added lock factory handling in FsDirectory (untested) 
+5. updated trivia in about.xml
+
+* Update to 4.5.0
+
+fixes by Pascal Dimassimo:
+
+- Cache parameter was useless (LUCENE-5114)
+- LogMergePolicy don't has a method anymore to set useCoumpoundFile. Use IndexWriterConfig.setUseCompoundFile (LUCENE-5038)
+- Codec parameter was useless (LUCENE-5141)
+- TFIDFSimilarity encode/decode now uses long instead of byte (LUCENE-5078) 
+
+
+
 * Update to 4.3.0
 
 

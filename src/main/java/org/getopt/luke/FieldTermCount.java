@@ -13,4 +13,13 @@ public class FieldTermCount implements Comparable<FieldTermCount> {
       return 0;
     }
   }
+
+    public int compareToValues(FieldTermCount f2) {
+        if (termCount >= f2.termCount) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
 }

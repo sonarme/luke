@@ -6,17 +6,23 @@
 
     <groupId>luke</groupId>
     <artifactId>luke</artifactId>
-    <version>4.3.0</version>
+    <version>${lucene.version}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lucene.version>4.3.0</lucene.version>
-        <ehcache.version>2.6.2</ehcache.version>
-        <hadoop.version>0.20.2</hadoop.version>
+        <lucene.version>4.10.4</lucene.version>
+        <ehcache.version>2.9.0</ehcache.version>
+        <hadoop.version>1.2.1</hadoop.version>
         <log4j.version>1.2.17</log4j.version>
-        <maven-assembly-plugin.version>2.3</maven-assembly-plugin.version>
         <rhino.version>1.7R4</rhino.version>
+        <elasticsearch.version>1.5.0</elasticsearch.version>
 
+        <maven-shade-plugin.version>2.3</maven-shade-plugin.version>
+        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+        <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+        <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+        <exec-maven-plugin.version>1.2.1</exec-maven-plugin.version>
     </properties>
 
     <repositories>
@@ -63,6 +69,14 @@
             <version>${lucene.version}</version>
         </dependency>
 
+        <!-- Elasticsearch -->
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+
         <!-- SOLR -->
 
         <dependency>
@@ -93,7 +107,6 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <version>${ehcache.version}</version>
-            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -101,6 +114,12 @@
         	<artifactId>log4j</artifactId>
         	<version>${log4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -126,8 +145,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -140,48 +160,95 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <version>${exec-maven-plugin.version}</version>
                 <configuration>
                     <mainClass/>
                 </configuration>
             </plugin>
 
+            <!-- create a tar.gz distribution file with all the binary dependencies in lib directory -->
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-jar-plugin.version}</version>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
                     <archive>
                         <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>org.getopt.luke.Luke</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>.</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-dependency-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <!-- this is used for inheritance merges -->
                         <phase>package</phase>
-                        <!-- append to the packaging phase. -->
                         <goals>
-                            <goal>single</goal>
-                            <!-- goals == mojos -->
+                            <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
 
             <plugin>
-                <inherited>true</inherited>
+                <artifactId>maven-shade-plugin</artifactId>
                 <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-shade-plugin.version}</version>
+                <configuration>
+                    <finalName>${project.artifactId}-with-deps</finalName>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.getopt.luke.Luke</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 

@@ -1,11 +1,5 @@
 package org.getopt.luke.plugins;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,9 +8,14 @@ import org.apache.hadoop.util.StringUtils;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
-import org.getopt.luke.IntPair;
 import org.getopt.luke.LukePlugin;
 import org.getopt.luke.SlowThread;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class HadoopPlugin extends LukePlugin {
   
@@ -112,6 +111,14 @@ public class HadoopPlugin extends LukePlugin {
     myIr = null;
     try {
       Configuration conf = new Configuration();
+        // courtesy of http://stackoverflow.com/a/21118824/158328
+        // to overcome the issue with loading everything into a single jar and these settings being reset in maven-assembly
+        conf.set("fs.hdfs.impl",
+                org.apache.hadoop.hdfs.DistributedFileSystem.class.getName()
+        );
+        conf.set("fs.file.impl",
+                org.apache.hadoop.fs.LocalFileSystem.class.getName()
+        );
       Path path = new Path(uriTxt);
       FileSystem fs = path.getFileSystem(conf);
       if (!fs.exists(path) || fs.isFile(path)) {
@@ -123,7 +130,7 @@ public class HadoopPlugin extends LukePlugin {
       FileStatus[] stats = fs.listStatus(path);
       boolean hasParts = true;
       for (FileStatus s : stats) {
-        if (s.isDir() && s.getPath().getName().startsWith("part-")) {
+        if (s.isDirectory() && s.getPath().getName().startsWith("part-")) {
           continue;
         } else {
           hasParts = false;
